@@ -1,50 +1,74 @@
 x <- c(0.61, .93, .83, .35, .54, .16, .91, .62, .62)
 y <- c(.67, .84, .6, .18, .85, .47, 1.1, .65, .36)
 fit <- lm(y ~ x)
+coef <- summary(fit)$coefficients
 
-res.sd <- function(x, y, fit) {
-    
-    yhats <- coef(fit)[1] + coef(fit)[2] * x
-    #e <- y - yhats
-    #e <- (y - (coef(fit)[2] * x) - coef(fit)[1])
-    e <- resid(fit)
-    print(e)
-    # 0 if an intercept is included
-    print(paste0("sum of e: ", round(sum(e), 9)))
-    sqrt(sum(e^2)/(length(e)-2))
-}
+# q1
+round(coef[2,4], 5)
 
-sd <- res.sd(x, y, fit)
-print(round(sd,3))
-beta1 <- coef(fit)[2]
+# res.sd <- function(x, y, fit) {
+#     yhats <- coef(fit)[1] + coef(fit)[2] * x
+#     #e <- y - yhats
+#     #e <- (y - (coef(fit)[2] * x) - coef(fit)[1])
+#     e <- resid(fit)
+#     # 0 if an intercept is included
+#     print(paste0("sum of e: ", round(sum(e), 9)))
+#     sqrt(sum(e^2)/(length(e)-2))
+# }
 
 
+# q2
+e <- resid(fit)
+res.sd <- sqrt(sum(e^2)/(length(e)-2))
+print(round(res.sd,3))
+
+
+# q3
 data(mtcars)
-fit <- lm(mpg ~ wt, data = mtcars)
-sd <- res.sd(mtcars$wt, mtcars$mpg, fit)
-yhat <- coef(fit)[1] + coef(fit)[2] * mean(mtcars$wt)
-n <- nrow(mtcars)
-ci <- yhat + c(-1, 1) * qt(0.975, n - 1) * sd / sqrt(n)
-print(round(ci[1],3))
+fit <- lm(I(mpg - mean(mpg)) ~ I(wt - mean(wt)), data = mtcars)
+coef <- summary(fit)$coefficients
+
+beta0 <- coef[1,1]
+se0 <- coef[1,2]
+ci0 <- beta0 + c(-1, 1) * qt(.975, fit$df) * se0
+print(round(mean(mtcars$mpg) + ci0[1], 3))
 
 # q5
-yhat <- coef(fit)[1] + coef(fit)[2] * 3
-t <- qt(0.975, n - 1)
-z <- qnorm(0.975)
-yhat + c(-1, 1) * z * sd / sqrt(n)
+beta1 <- coef[2,1]
+se1 <- coef[2,2]
+ci1 <- beta1 + c(-1, 1) * qt(.975, fit$df) * se1
 
-#q6
-print(round(coef(fit)[2] * 2, 2))
+x <- 3 - mean(mtcars$wt)
+yhat <- ci0[2] + x * ci1[2]
+print(round(mean(mtcars$mpg) + yhat, 2))
 
+mean(mtcars$mpg) + predict(lm(I(mpg-mean(mpg))~I(wt-mean(wt)),mtcars), newdata=data.frame(wt=3-mean(mtcars$wt)), interval="prediction", level=.95)[3]
+predict(lm(mpg~wt, mtcars), newdata=data.frame(wt=3), interval="prediction", level=.95)[3]
 
-fit_si <- lm(mpg ~ wt, data = mtcars)
-fit_s <- lm(mpg ~ wt - 1, data = mtcars)
+# q6
+print(round(ci1[1] * 2, 3))
 
-yhat_si <- coef(fit_si)[1] + mtcars$wt * coef(fit_si)[2]
-se_si <- sum((mtcars$mpg - yhat_si)^2)
+# q7
+x <- 100 * c(1, 2, 3, 4, 5, 6, 7, 8, 9)
+y <- c(5, 10, 15, 20, 25, 30, 35, 40, 45)
+lm(y ~ x)$coef[2]
+lm(y ~ I(x/100))$coef[2]
 
-yhat_s <- mtcars$wt * coef(fit_s)[1]
-se_s <- sum((mtcars$mpg - yhat_s)^2)
+# q8
+c1 <- lm(mpg ~ wt, data = mtcars)$coef
+c2 <- lm(mpg ~ I(wt+7), data = mtcars)$coef
+print(c1)
+print(c2)
+c1[1] - 7*c1[2]
 
-se_si / se_s
+# q9
+
+fit1 <- lm(mpg ~ 1, mtcars)
+yhat1 <- predict(fit1, newdata = data.frame(wt=mtcars$wt))
+denom <- sum( (mtcars$mpg - yhat1)^2)
+
+fit2 <- lm(mpg ~ wt, mtcars)
+yhat2 <- predict(fit2, newdata = data.frame(wt=mtcars$wt))
+numer <- sum( (mtcars$mpg - yhat2)^2)
+print(round(numer/denom,2))
 
