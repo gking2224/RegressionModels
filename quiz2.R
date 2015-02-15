@@ -6,17 +6,6 @@ coef <- summary(fit)$coefficients
 # q1
 round(coef[2,4], 5)
 
-# res.sd <- function(x, y, fit) {
-#     yhats <- coef(fit)[1] + coef(fit)[2] * x
-#     #e <- y - yhats
-#     #e <- (y - (coef(fit)[2] * x) - coef(fit)[1])
-#     e <- resid(fit)
-#     # 0 if an intercept is included
-#     print(paste0("sum of e: ", round(sum(e), 9)))
-#     sqrt(sum(e^2)/(length(e)-2))
-# }
-
-
 # q2
 e <- resid(fit)
 res.sd <- sqrt(sum(e^2)/(length(e)-2))
