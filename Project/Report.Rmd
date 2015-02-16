@@ -1,0 +1,74 @@
+---
+title: "Analysis of Factors Affecting Fuel Efficiency"
+author: "Graham King"
+date: "February 2015"
+output:
+  html_document:
+    css: report.css
+---
+```{r opts, echo=FALSE}
+library(knitr)
+opts_chunk$set(comment = NA, fig.width = 12, fig.height = 6, echo = FALSE, size = 'small')
+
+read_chunk("init.R")
+read_chunk("mpg.R")
+```
+###Overview
+In this report, I will look at the effect that the weight of a car has on its fuel economy, and what impact the transmission has on this.
+
+```{r init}
+<<init>>
+```
+### Content
+```{r subset}
+<<subset>>
+```
+
+AN initial look at the complete dataset shows that there is a clear linear relationship between car weight and fuel economy.
+```{r plot1}
+<<plot1>>
+```
+
+The sum of all residuals gives an indication of variance:
+```{r model1}
+<<model1>>
+```
+
+When looking at Automatic and Manual transmission data separately, there is a distinct difference in the regression line:
+```{r plot2}
+<<plot2>>
+```
+
+This figure (N) indicates that fuel economy (mpg) reduces faster for manual cars as the weight increases, although at lower weights, the fuel economy is superior than for automatic cars.
+
+We can demonstrate that this model is a better fit by looking at the sum of all residuals for this data:
+
+```{r model2}
+<<model2>>
+```
+
+This variance(??) is lower than for the combined dataset.
+
+The regression model coefficients are as follows:
+
+```{r model2}
+<<model2>>
+```
+
+Specifically, for each 1,000lb (??) increase in weight, the manual cars reduce mpg by xyz, compared with abc for automatic cars.
+
+We can use this model to predict weights for hypothetical cars:
+
+```{r predictions}
+<<predictions>>
+```
+
+Under this model, a hypothetical manual transmission car weighing 1lbs would have a higher mpg than an automatic car of the same weight. Conversely, a hypothetical automatic car weighing 4lbs would have a l
+
+****
+
+### Appendix
+Code1
+```{r ap1, eval = FALSE, echo = TRUE}
+<<subset>>
+```
