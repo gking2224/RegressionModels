@@ -1,5 +1,5 @@
 ---
-title: "Analysis of Factors Affecting Fuel Efficiency"
+title: "Analysis of Relationship Between Weight, Transmission and Fuel Economy"
 author: "Graham King"
 date: "February 2015"
 output:
@@ -14,7 +14,9 @@ read_chunk("init.R")
 read_chunk("mpg.R")
 ```
 ###Overview
-In this report, I will look at the effect that the weight of a car has on its fuel economy, and what impact the transmission has on this.
+In this report, I will use the `mtcars` dataset to look at the effect that the weight of a car has on its fuel economy, and what impact the transmission has on this.
+
+The data shows that lighter manual transmission cars have better fuel economy, but this advantage is transferred to automatic cars as the cars get heavier.
 
 ```{r init}
 <<init>>
@@ -24,51 +26,106 @@ In this report, I will look at the effect that the weight of a car has on its fu
 <<subset>>
 ```
 
-AN initial look at the complete dataset shows that there is a clear linear relationship between car weight and fuel economy.
+An initial look at the complete dataset (Figure 1) shows that there is a clear linear relationship between car weight and fuel economy.
 ```{r plot1}
 <<plot1>>
 ```
 
-The sum of all residuals gives an indication of variance:
-```{r model1}
-<<model1>>
+There is a certain degree of distance between some values and the regression line. The sum of these squared vertical distances is:
+```{r sumresid1}
+<<sumresid1>>
 ```
 
-When looking at Automatic and Manual transmission data separately, there is a distinct difference in the regression line:
+and the residual variance is calculated as:
+
+```{r residvar1}
+<<residvar1>>
+```
+
+When looking at Automatic and Manual transmission data separately, there is a distinct difference in the regression lines:
 ```{r plot2}
 <<plot2>>
 ```
 
-This figure (N) indicates that fuel economy (mpg) reduces faster for manual cars as the weight increases, although at lower weights, the fuel economy is superior than for automatic cars.
+Figure 2 indicates that fuel economy (mpg) reduces faster for manual cars as the weight increases. However at lower weights, the fuel economy is superior than for automatic cars.
 
-We can demonstrate that this model is a better fit by looking at the sum of all residuals for this data:
+We can demonstrate that this model is a better fit by looking at the sum of all squares of the distance of residuals from their corresponding regression line:
 
-```{r model2}
-<<model2>>
+```{r sumresid2}
+<<sumresid2>>
 ```
 
-This variance(??) is lower than for the combined dataset.
-
-The regression model coefficients are as follows:
-
-```{r model2}
-<<model2>>
+So the total of all distances from the regression lines is less than in the combined dataset. And the corresponding residual variances are also both lower than the same statistic in the combined database:
+```{r residvar2}
+<<residvar2>>
 ```
 
-Specifically, for each 1,000lb (??) increase in weight, the manual cars reduce mpg by xyz, compared with abc for automatic cars.
+The difference in residual variances can be better visualised in a comparison of the residual plots, with the dots spread farther away from zero (the regression model) in the combined dataset:
+```{r residplots}
+<<residplots>>
+```
 
-We can use this model to predict weights for hypothetical cars:
+The regression model coefficients for intercept and slope are as follows:
+
+```{r coefs}
+<<coefs>>
+```
+
+Specifically, for each 1,000lb increase in weight, the manual cars have a fuel economy reduction  of `r abs(round(coefTable[2,2], 1))` mpg, compared with a reduction of `r abs(round(coefTable[1,2], 1))` mpg for automatic cars.
+
+We can use this model to predict fuel economy for hypothetical car weights:
 
 ```{r predictions}
 <<predictions>>
 ```
 
-Under this model, a hypothetical manual transmission car weighing 1lbs would have a higher mpg than an automatic car of the same weight. Conversely, a hypothetical automatic car weighing 4lbs would have a l
+Under this model, a hypothetical manual transmission car weighing 1,000lbs gets `r round(predictions[2,2] - predictions[1,2], 1)` more miles to the gallon than an automatic car of the same weight. Conversely, a hypothetical manual car weighing 4,000lbs gets `r round(predictions[1,3] - predictions[2,3], 1)` fewer miles to the gallon than an automatic car of the same weight.
+
+However, this model cannot be extended to extremes: despite what the model says, a theoretical car weighing 0lbs will never get that kind of fuel economy, regardless of whether it's a manual or automatic!
 
 ****
 
 ### Appendix
-Code1
+```{r ap0, eval = FALSE, echo = TRUE}
+<<init>>
+```
+Start by converting am to a factor variable:
 ```{r ap1, eval = FALSE, echo = TRUE}
 <<subset>>
+```
+Plot full dataset with regression linear model:
+```{r ap2, eval = FALSE, echo = TRUE}
+<<plot1>>
+```
+Calculate sum of squared errors:
+```{r ap3, eval = FALSE, echo = TRUE}
+<<sumresid1>>
+```
+Calculate residual variance:
+```{r ap4, eval = FALSE, echo = TRUE}
+<<residvar1>>
+```
+Create subsets of data for automatic and manual transmition and plot again:
+```{r ap5, eval = FALSE, echo = TRUE}
+<<plot2>>
+```
+Re-calculate sum of all squared errors, from respective models:
+```{r ap6, eval = FALSE, echo = TRUE}
+<<sumresid2>>
+```
+Calculate residual variance for each separate linear model:
+```{r ap7, eval = FALSE, echo = TRUE}
+<<residvar2>>
+```
+Residual plots:
+```{r ap8, eval = FALSE, echo = TRUE}
+<<residplots>>
+```
+Display coefficients:
+```{r ap9, eval = FALSE, echo = TRUE}
+<<coefs>>
+```
+Calculate predictions:
+```{r ap10, eval = FALSE, echo = TRUE}
+<<predictions>>
 ```
